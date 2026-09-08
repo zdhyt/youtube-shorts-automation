@@ -1,0 +1,16 @@
+*.json
+*.mp4
+*.mov
+*.m4v
+*.webm
+*.avi
+*.mkv
+
+token.json
+credentials.json
+
+work/
+__pycache__/
+*.pyc
+.env
+.env.*
