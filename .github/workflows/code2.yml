@@ -4,11 +4,11 @@ on:
   workflow_dispatch:
 
   schedule:
-    # 9:00 AM IST publish
-    - cron: "30 3 * * *"
+    # 8:30 AM IST → publish at 9:00 AM IST
+    - cron: "0 3 * * *"
 
-    # 6:00 PM IST publish
-    - cron: "30 12 * * *"
+    # 5:30 PM IST → publish at 6:00 PM IST
+    - cron: "0 12 * * *"
 
 jobs:
   code2:
@@ -34,7 +34,7 @@ jobs:
       - name: Determine publish time
         id: publish
         run: |
-          if [ "${{ github.event.schedule }}" = "30 3 * * *" ]; then
+          if [ "${{ github.event.schedule }}" = "0 3 * * *" ]; then
             echo "publish_hour=9" >> "$GITHUB_OUTPUT"
             echo "publish_minute=0" >> "$GITHUB_OUTPUT"
           else
