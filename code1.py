@@ -3,6 +3,7 @@ import io
 import json
 import time
 import logging
+import random
 from pathlib import Path
 from datetime import datetime, timezone, timedelta
 
@@ -29,9 +30,13 @@ GEMINI_FALLBACK_MODELS = [
     "gemini-3.5-flash",
 ]
 
-MAX_VIDEOS_PER_RUN = int(os.getenv("MAX_VIDEOS_PER_RUN", "3"))
+# IMPORTANT:
+# Keep this at 1 while testing.
+MAX_VIDEOS_PER_RUN = int(os.getenv("MAX_VIDEOS_PER_RUN", "1"))
 
-MAX_VIDEO_SIZE_MB = int(os.getenv("MAX_VIDEO_SIZE_MB", "500"))
+MAX_VIDEO_SIZE_MB = int(
+    os.getenv("MAX_VIDEO_SIZE_MB", "500")
+)
 
 VIDEO_EXTENSIONS = {
     ".mp4",
@@ -49,20 +54,266 @@ INDIA_LANGUAGE = "en"
 
 
 # ============================================================
+# UNIVERSAL COMEDY FALLBACK METADATA
+# ============================================================
+
+FALLBACK_COMEDY_METADATA = [
+
+    # --------------------------------------------------------
+    # FALLBACK 1
+    # --------------------------------------------------------
+    """TITLE_1:
+Try Not to Laugh 😂 | Funniest Comedy Moments
+
+TITLE_2:
+You'll Try Not to Laugh at These 😂
+
+TITLE_3:
+Funniest Moments You Need to See 😂
+
+RECOMMENDED_TITLE:
+Try Not to Laugh 😂 | Funniest Comedy Moments
+
+DESCRIPTION:
+😂 Think you can watch this without laughing? Enjoy a collection of hilarious comedy moments, unexpected reactions, and funny situations packed into one entertaining compilation. Watch until the end and try your best not to laugh!
+
+HASHTAGS:
+#Shorts #Comedy #Funny #TryNotToLaugh #FunnyMoments #ComedyCompilation #FunnyVideos #Humor #Laugh #Entertainment #ComedyShorts #ViralShorts
+
+CONTENT_SCORE:
+5
+
+TREND_SCORE:
+5
+
+RELEVANCE_DECISION:
+NO_TREND
+
+RELEVANCE_REASON:
+Universal fallback metadata for comedy compilation content because AI metadata generation was unavailable.
+
+TREND_ANGLE:
+Try-not-to-laugh comedy and entertaining funny moments
+
+KEYWORDS:
+try not to laugh, comedy, funny moments, comedy compilation, funny videos, humor, laughter, entertainment, comedy shorts
+""",
+
+    # --------------------------------------------------------
+    # FALLBACK 2
+    # --------------------------------------------------------
+    """TITLE_1:
+Funniest Comedy Moments 😂 | Watch Till the End
+
+TITLE_2:
+These Funny Moments Are Too Good 😂
+
+TITLE_3:
+A Compilation of Hilarious Moments 😂
+
+RECOMMENDED_TITLE:
+Funniest Comedy Moments 😂 | Watch Till the End
+
+DESCRIPTION:
+😂 Here comes a collection of hilarious comedy moments to bring some fun to your day! From unexpected situations to unforgettable funny moments, enjoy this entertaining comedy compilation and watch till the end.
+
+HASHTAGS:
+#Shorts #Funny #Comedy #FunnyMoments #ComedyCompilation #Hilarious #Humor #Laugh #Entertainment #FunnyVideos #ComedyShorts #TrendingShorts
+
+CONTENT_SCORE:
+5
+
+TREND_SCORE:
+5
+
+RELEVANCE_DECISION:
+NO_TREND
+
+RELEVANCE_REASON:
+Universal fallback metadata for comedy compilation content because AI metadata generation was unavailable.
+
+TREND_ANGLE:
+Funny moments and general comedy entertainment
+
+KEYWORDS:
+funniest moments, comedy, funny videos, hilarious moments, comedy compilation, humor, entertainment, funny shorts, laughter
+""",
+
+    # --------------------------------------------------------
+    # FALLBACK 3
+    # --------------------------------------------------------
+    """TITLE_1:
+When Comedy Gets Unexpected 😂 | Funniest Moments
+
+TITLE_2:
+You Never Know What Happens Next 😂
+
+TITLE_3:
+Unexpected Funny Moments 😂 | Comedy Compilation
+
+RECOMMENDED_TITLE:
+When Comedy Gets Unexpected 😂 | Funniest Moments
+
+DESCRIPTION:
+😂 Sometimes the funniest moments are the ones nobody expects! Enjoy this collection of unexpected, hilarious, and entertaining comedy moments. Stay until the end because you never know what funny moment comes next!
+
+HASHTAGS:
+#Shorts #Comedy #Funny #Unexpected #FunnyMoments #ComedyCompilation #Hilarious #Humor #FunnyVideos #Laugh #Entertainment #ComedyShorts
+
+CONTENT_SCORE:
+5
+
+TREND_SCORE:
+5
+
+RELEVANCE_DECISION:
+NO_TREND
+
+RELEVANCE_REASON:
+Universal fallback metadata for comedy compilation content because AI metadata generation was unavailable.
+
+TREND_ANGLE:
+Unexpected moments and surprise-based comedy
+
+KEYWORDS:
+unexpected funny moments, comedy, funny videos, hilarious moments, comedy compilation, surprise, humor, entertainment, funny shorts
+""",
+
+    # --------------------------------------------------------
+    # FALLBACK 4
+    # --------------------------------------------------------
+    """TITLE_1:
+Ultimate Comedy Compilation 😂 | Non-Stop Funny Moments
+
+TITLE_2:
+Non-Stop Laughs 😂 | Best Comedy Moments
+
+TITLE_3:
+This Comedy Compilation Is Too Funny 😂
+
+RECOMMENDED_TITLE:
+Ultimate Comedy Compilation 😂 | Non-Stop Funny Moments
+
+DESCRIPTION:
+😂 Get ready for non-stop laughs with a compilation of entertaining comedy moments and hilarious situations. Sit back, enjoy the funniest moments, and share the laughter with someone who loves comedy!
+
+HASHTAGS:
+#Shorts #Comedy #Funny #ComedyCompilation #FunnyMoments #NonStopLaughs #Hilarious #Humor #Entertainment #FunnyVideos #Laugh #ComedyShorts
+
+CONTENT_SCORE:
+5
+
+TREND_SCORE:
+5
+
+RELEVANCE_DECISION:
+NO_TREND
+
+RELEVANCE_REASON:
+Universal fallback metadata for comedy compilation content because AI metadata generation was unavailable.
+
+TREND_ANGLE:
+Compilation-style comedy entertainment and continuous funny moments
+
+KEYWORDS:
+comedy compilation, funny moments, non stop laughs, funny videos, hilarious, humor, entertainment, comedy shorts, laughter
+""",
+
+    # --------------------------------------------------------
+    # FALLBACK 5
+    # --------------------------------------------------------
+    """TITLE_1:
+Can You Watch This Without Laughing? 😂
+
+TITLE_2:
+Try to Keep a Straight Face 😂 | Comedy Compilation
+
+TITLE_3:
+The Ultimate Laugh Challenge 😂
+
+RECOMMENDED_TITLE:
+Can You Watch This Without Laughing? 😂
+
+DESCRIPTION:
+😂 Here's your next laugh challenge! Enjoy a collection of funny and entertaining comedy moments and see if you can keep a straight face from beginning to end. If you love comedy, this one is for you!
+
+HASHTAGS:
+#Shorts #Comedy #Funny #LaughChallenge #TryNotToLaugh #FunnyMoments #ComedyCompilation #StraightFace #Humor #Entertainment #FunnyVideos #ComedyShorts
+
+CONTENT_SCORE:
+5
+
+TREND_SCORE:
+5
+
+RELEVANCE_DECISION:
+NO_TREND
+
+RELEVANCE_REASON:
+Universal fallback metadata for comedy compilation content because AI metadata generation was unavailable.
+
+TREND_ANGLE:
+Laugh challenge and try-not-to-laugh comedy
+
+KEYWORDS:
+laugh challenge, try not to laugh, comedy, funny moments, comedy compilation, funny videos, straight face challenge, humor, entertainment
+"""
+]
+
+
+def get_fallback_comedy_metadata():
+    """
+    Randomly select one universal comedy metadata set.
+
+    This is used when Gemini metadata generation fails
+    or generated metadata fails validation.
+    """
+
+    selected = random.choice(
+        FALLBACK_COMEDY_METADATA
+    )
+
+    logger.warning(
+        "Using randomly selected universal comedy fallback metadata."
+    )
+
+    return selected.strip()
+
+
+# ============================================================
 # ENVIRONMENT / SECRETS
 # ============================================================
 
 GEMINI_API_KEY = os.environ["GEMINI_API_KEY"]
 YOUTUBE_API_KEY = os.environ["YOUTUBE_API_KEY"]
 
-DRIVE_REFRESH_TOKEN = os.environ["GOOGLE_DRIVE_REFRESH_TOKEN"]
-GOOGLE_OAUTH_CLIENT_ID = os.environ["GOOGLE_OAUTH_CLIENT_ID"]
-GOOGLE_OAUTH_CLIENT_SECRET = os.environ["GOOGLE_OAUTH_CLIENT_SECRET"]
+DRIVE_REFRESH_TOKEN = os.environ[
+    "GOOGLE_DRIVE_REFRESH_TOKEN"
+]
 
-DRIVE_INPUT_FOLDER_ID = os.environ["DRIVE_INPUT_FOLDER_ID"]
-DRIVE_METADATA_FOLDER_ID = os.environ["DRIVE_METADATA_FOLDER_ID"]
-DRIVE_FAILED_FOLDER_ID = os.environ["DRIVE_FAILED_FOLDER_ID"]
-DRIVE_LOGS_FOLDER_ID = os.environ["DRIVE_LOGS_FOLDER_ID"]
+GOOGLE_OAUTH_CLIENT_ID = os.environ[
+    "GOOGLE_OAUTH_CLIENT_ID"
+]
+
+GOOGLE_OAUTH_CLIENT_SECRET = os.environ[
+    "GOOGLE_OAUTH_CLIENT_SECRET"
+]
+
+DRIVE_INPUT_FOLDER_ID = os.environ[
+    "DRIVE_INPUT_FOLDER_ID"
+]
+
+DRIVE_METADATA_FOLDER_ID = os.environ[
+    "DRIVE_METADATA_FOLDER_ID"
+]
+
+DRIVE_FAILED_FOLDER_ID = os.environ[
+    "DRIVE_FAILED_FOLDER_ID"
+]
+
+DRIVE_LOGS_FOLDER_ID = os.environ[
+    "DRIVE_LOGS_FOLDER_ID"
+]
 
 
 # ============================================================
@@ -74,7 +325,9 @@ logging.basicConfig(
     format="%(asctime)s | %(levelname)s | %(message)s",
 )
 
-logger = logging.getLogger("youtube-shorts-code1")
+logger = logging.getLogger(
+    "youtube-shorts-code1"
+)
 
 
 # ============================================================
@@ -128,18 +381,31 @@ def list_input_videos(drive_service):
             q=query,
             pageSize=100,
             orderBy="createdTime",
-            fields="files(id,name,mimeType,size,createdTime,modifiedTime)",
+            fields=(
+                "files(id,name,mimeType,size,"
+                "createdTime,modifiedTime)"
+            ),
         )
         .execute()
     )
 
-    files = response.get("files", [])
+    files = response.get(
+        "files",
+        []
+    )
 
     videos = []
 
     for file in files:
-        name = file.get("name", "")
-        suffix = Path(name).suffix.lower()
+
+        name = file.get(
+            "name",
+            ""
+        )
+
+        suffix = Path(
+            name
+        ).suffix.lower()
 
         if suffix in VIDEO_EXTENSIONS:
             videos.append(file)
@@ -147,16 +413,29 @@ def list_input_videos(drive_service):
     return videos
 
 
-def metadata_exists(drive_service, video_name):
+def metadata_exists(
+    drive_service,
+    video_name,
+):
     """
     Check whether a matching TXT file already exists.
     """
 
-    metadata_name = Path(video_name).stem + ".txt"
+    metadata_name = (
+        Path(video_name).stem
+        + ".txt"
+    )
+
+    escaped_name = (
+        metadata_name.replace(
+            chr(39),
+            chr(39) + chr(39)
+        )
+    )
 
     query = (
         f"'{DRIVE_METADATA_FOLDER_ID}' in parents "
-        f"and name = '{metadata_name.replace(chr(39), chr(39) + chr(39))}' "
+        f"and name = '{escaped_name}' "
         f"and trashed = false"
     )
 
@@ -170,32 +449,61 @@ def metadata_exists(drive_service, video_name):
         .execute()
     )
 
-    return len(response.get("files", [])) > 0
+    return len(
+        response.get(
+            "files",
+            []
+        )
+    ) > 0
 
 
-def download_drive_file(drive_service, file_id, destination):
+def download_drive_file(
+    drive_service,
+    file_id,
+    destination,
+):
     """
     Download a Drive file to the GitHub runner.
     """
 
-    request = drive_service.files().get_media(fileId=file_id)
+    request = (
+        drive_service.files()
+        .get_media(
+            fileId=file_id
+        )
+    )
 
-    with open(destination, "wb") as fh:
-        downloader = MediaIoBaseDownload(fh, request)
+    with open(
+        destination,
+        "wb"
+    ) as fh:
+
+        downloader = MediaIoBaseDownload(
+            fh,
+            request,
+        )
 
         done = False
 
         while not done:
-            status, done = downloader.next_chunk()
+
+            status, done = (
+                downloader.next_chunk()
+            )
 
             if status:
+
                 logger.info(
                     "Download progress: %.1f%%",
                     status.progress() * 100,
                 )
 
 
-def upload_text_file(drive_service, file_path, folder_id):
+def upload_text_file(
+    drive_service,
+    file_path,
+    folder_id,
+):
     """
     Upload a TXT file to Drive.
     """
@@ -225,16 +533,26 @@ def upload_text_file(drive_service, file_path, folder_id):
     return result
 
 
-def upload_log(drive_service, text):
+def upload_log(
+    drive_service,
+    text,
+):
     """
     Save a log file in 05_LOGS.
     """
 
-    timestamp = datetime.now(timezone.utc).strftime(
-        "%Y%m%d_%H%M%S"
+    timestamp = (
+        datetime.now(
+            timezone.utc
+        ).strftime(
+            "%Y%m%d_%H%M%S"
+        )
     )
 
-    log_path = WORK_DIR / f"code1_{timestamp}.log"
+    log_path = (
+        WORK_DIR
+        / f"code1_{timestamp}.log"
+    )
 
     log_path.write_text(
         text,
@@ -242,29 +560,39 @@ def upload_log(drive_service, text):
     )
 
     try:
+
         upload_text_file(
             drive_service,
             log_path,
             DRIVE_LOGS_FOLDER_ID,
         )
+
     except Exception as exc:
+
         logger.warning(
             "Could not upload log: %s",
             exc,
         )
 
 
-def move_file_to_failed(drive_service, file_id):
+def move_file_to_failed(
+    drive_service,
+    file_id,
+):
     """
     Move a failed video from 01_INPUT to 04_FAILED.
     """
 
-    drive_service.files().update(
-        fileId=file_id,
-        addParents=DRIVE_FAILED_FOLDER_ID,
-        removeParents=DRIVE_INPUT_FOLDER_ID,
-        fields="id,parents",
-    ).execute()
+    (
+        drive_service.files()
+        .update(
+            fileId=file_id,
+            addParents=DRIVE_FAILED_FOLDER_ID,
+            removeParents=DRIVE_INPUT_FOLDER_ID,
+            fields="id,parents",
+        )
+        .execute()
+    )
 
 
 # ============================================================
@@ -272,12 +600,16 @@ def move_file_to_failed(drive_service, file_id):
 # ============================================================
 
 def get_gemini_client():
+
     return genai.Client(
         api_key=GEMINI_API_KEY
     )
 
 
-def upload_video_to_gemini(client, video_path):
+def upload_video_to_gemini(
+    client,
+    video_path,
+):
     """
     Upload the video to Gemini Files API.
     """
@@ -296,7 +628,10 @@ def upload_video_to_gemini(client, video_path):
     while True:
 
         if uploaded.state:
-            state_name = uploaded.state.name
+
+            state_name = (
+                uploaded.state.name
+            )
 
             logger.info(
                 "Gemini video state: %s",
@@ -310,11 +645,17 @@ def upload_video_to_gemini(client, video_path):
                 "FAILED",
                 "ERROR",
             }:
+
                 raise RuntimeError(
-                    f"Gemini video processing failed: {state_name}"
+                    "Gemini video processing "
+                    f"failed: {state_name}"
                 )
 
-        if time.time() - start > 600:
+        if (
+            time.time() - start
+            > 600
+        ):
+
             raise TimeoutError(
                 "Gemini video processing timed out."
             )
@@ -330,12 +671,12 @@ def upload_video_to_gemini(client, video_path):
 # VIDEO ANALYSIS
 # ============================================================
 
-def analyze_video(client, uploaded_file):
+def analyze_video(
+    client,
+    uploaded_file,
+):
     """
     Understand the Short.
-
-    We intentionally request plain JSON-like labeled information
-    instead of a complicated nested schema.
     """
 
     prompt = """
@@ -390,25 +731,31 @@ CONFIDENCE:
     for model in GEMINI_FALLBACK_MODELS:
 
         try:
+
             logger.info(
                 "Analyzing video with Gemini model: %s",
                 model,
             )
 
-            response = client.models.generate_content(
-                model=model,
-                contents=[
-                    uploaded_file,
-                    prompt,
-                ],
+            response = (
+                client.models.generate_content(
+                    model=model,
+                    contents=[
+                        uploaded_file,
+                        prompt,
+                    ],
+                )
             )
 
-            text = response.text.strip()
+            text = (
+                response.text.strip()
+            )
 
             if text:
                 return text
 
         except Exception as exc:
+
             logger.warning(
                 "Video analysis failed with %s: %s",
                 model,
@@ -435,9 +782,16 @@ def youtube_search(query):
         "type": "video",
         "order": "relevance",
         "publishedAfter": (
-            datetime.now(timezone.utc)
+            datetime.now(
+                timezone.utc
+            )
             - timedelta(days=30)
-        ).isoformat().replace("+00:00", "Z"),
+        )
+        .isoformat()
+        .replace(
+            "+00:00",
+            "Z"
+        ),
         "regionCode": INDIA_REGION,
         "relevanceLanguage": INDIA_LANGUAGE,
         "maxResults": 5,
@@ -457,23 +811,33 @@ def youtube_search(query):
 
     results = []
 
-    for item in data.get("items", []):
+    for item in data.get(
+        "items",
+        []
+    ):
 
-        snippet = item.get("snippet", {})
+        snippet = item.get(
+            "snippet",
+            {}
+        )
 
         results.append(
             {
-                "title": snippet.get("title", ""),
-                "description": snippet.get("description", "")[
-                    :500
-                ],
+                "title": snippet.get(
+                    "title",
+                    ""
+                ),
+                "description": snippet.get(
+                    "description",
+                    ""
+                )[:500],
                 "published_at": snippet.get(
                     "publishedAt",
-                    "",
+                    ""
                 ),
                 "channel": snippet.get(
                     "channelTitle",
-                    "",
+                    ""
                 ),
             }
         )
@@ -481,7 +845,9 @@ def youtube_search(query):
     return results
 
 
-def collect_youtube_research(analysis_text):
+def collect_youtube_research(
+    analysis_text,
+):
     """
     Use the topic/keywords from the video analysis
     to collect recent YouTube signals.
@@ -503,6 +869,7 @@ def collect_youtube_research(analysis_text):
         searches.append(topic)
 
     if keywords:
+
         first_keywords = [
             x.strip()
             for x in keywords.split(",")
@@ -510,8 +877,11 @@ def collect_youtube_research(analysis_text):
         ]
 
         if first_keywords:
+
             searches.append(
-                " ".join(first_keywords[:3])
+                " ".join(
+                    first_keywords[:3]
+                )
             )
 
     searches = searches[:2]
@@ -521,14 +891,19 @@ def collect_youtube_research(analysis_text):
     for query in searches:
 
         try:
+
             logger.info(
                 "YouTube research query: %s",
                 query,
             )
 
-            results = youtube_search(query)
+            results = youtube_search(
+                query
+            )
 
-            all_results.extend(results)
+            all_results.extend(
+                results
+            )
 
         except Exception as exc:
 
@@ -544,12 +919,13 @@ def collect_youtube_research(analysis_text):
 # WEB + TREND RESEARCH
 # ============================================================
 
-def web_trend_research(client, analysis_text):
+def web_trend_research(
+    client,
+    analysis_text,
+):
     """
     Gemini uses Google Search grounding to research current
     web information.
-
-    This replaces the older Custom Search API approach.
     """
 
     prompt = f"""
@@ -602,20 +978,29 @@ RESEARCH_SUMMARY:
                 model,
             )
 
-            response = client.models.generate_content(
-                model=model,
-                contents=prompt,
-                config=types.GenerateContentConfig(
-                    tools=[
-                        types.Tool(
-                            google_search=types.GoogleSearch()
+            response = (
+                client.models.generate_content(
+                    model=model,
+                    contents=prompt,
+                    config=(
+                        types.GenerateContentConfig(
+                            tools=[
+                                types.Tool(
+                                    google_search=(
+                                        types.GoogleSearch()
+                                    )
+                                )
+                            ]
                         )
-                    ]
-                ),
+                    ),
+                )
             )
 
             if response.text:
-                return response.text.strip()
+
+                return (
+                    response.text.strip()
+                )
 
         except Exception as exc:
 
@@ -649,6 +1034,10 @@ def generate_metadata(
 ):
     """
     Generate the final Shorts metadata.
+
+    If all Gemini metadata-generation attempts fail,
+    automatically use one of the five universal comedy
+    fallback metadata sets.
     """
 
     youtube_context = "\n".join(
@@ -663,6 +1052,7 @@ def generate_metadata(
     )
 
     if not youtube_context:
+
         youtube_context = (
             "No useful YouTube search results were found."
         )
@@ -753,12 +1143,16 @@ keyword1, keyword2, keyword3, keyword4, keyword5
                 model,
             )
 
-            response = client.models.generate_content(
-                model=model,
-                contents=prompt,
+            response = (
+                client.models.generate_content(
+                    model=model,
+                    contents=prompt,
+                )
             )
 
-            text = response.text.strip()
+            text = (
+                response.text.strip()
+            )
 
             if text:
                 return text
@@ -771,23 +1165,39 @@ keyword1, keyword2, keyword3, keyword4, keyword5
                 exc,
             )
 
-    raise RuntimeError(
-        "All Gemini metadata-generation models failed."
+    # --------------------------------------------------------
+    # Gemini completely failed.
+    # Use one of the five universal metadata sets.
+    # --------------------------------------------------------
+
+    logger.warning(
+        "All Gemini metadata-generation models failed. "
+        "Using universal comedy fallback metadata."
     )
+
+    return get_fallback_comedy_metadata()
 
 
 # ============================================================
 # FIELD EXTRACTION
 # ============================================================
 
-def extract_field(text, field_name):
+def extract_field(
+    text,
+    field_name,
+):
     """
     Extract a labeled field from Gemini output.
     """
 
-    marker = field_name + ":"
+    marker = (
+        field_name
+        + ":"
+    )
 
-    start = text.find(marker)
+    start = text.find(
+        marker
+    )
 
     if start == -1:
         return ""
@@ -805,31 +1215,49 @@ def extract_field(text, field_name):
         stripped = line.strip()
 
         if not stripped:
+
             if values:
                 break
+
             continue
 
         # Stop when another uppercase field begins.
         if (
             ":" in stripped
-            and stripped.split(":", 1)[0]
+            and stripped.split(
+                ":",
+                1
+            )[0]
             .strip()
-            .replace("_", "")
+            .replace(
+                "_",
+                ""
+            )
             .isalnum()
-            and stripped.split(":", 1)[0].isupper()
+            and stripped.split(
+                ":",
+                1
+            )[0].isupper()
         ):
+
             break
 
-        values.append(stripped)
+        values.append(
+            stripped
+        )
 
-    return "\n".join(values).strip()
+    return "\n".join(
+        values
+    ).strip()
 
 
 # ============================================================
 # METADATA VALIDATION
 # ============================================================
 
-def validate_metadata(metadata_text):
+def validate_metadata(
+    metadata_text,
+):
     """
     Basic quality gate before saving the TXT.
     """
@@ -853,6 +1281,7 @@ def validate_metadata(metadata_text):
     ]
 
     if missing:
+
         raise ValueError(
             "Metadata missing fields: "
             + ", ".join(missing)
@@ -864,6 +1293,7 @@ def validate_metadata(metadata_text):
     )
 
     if not recommended:
+
         raise ValueError(
             "Recommended title is empty."
         )
@@ -874,6 +1304,7 @@ def validate_metadata(metadata_text):
     )
 
     if not description:
+
         raise ValueError(
             "Description is empty."
         )
@@ -890,14 +1321,98 @@ def validate_metadata(metadata_text):
     ]
 
     if not hashtag_list:
+
         raise ValueError(
             "No hashtags generated."
         )
 
     if len(hashtag_list) > 15:
+
         raise ValueError(
             "Too many hashtags generated."
         )
+
+
+# ============================================================
+# SAFE METADATA GENERATION
+# ============================================================
+
+def generate_valid_metadata(
+    client,
+    analysis_text,
+    youtube_results,
+    web_research,
+):
+    """
+    Generate metadata with an additional safety layer.
+
+    If Gemini fails completely OR returns malformed metadata,
+    automatically select one of the five universal comedy
+    fallback metadata sets.
+    """
+
+    try:
+
+        metadata = generate_metadata(
+            client,
+            analysis_text,
+            youtube_results,
+            web_research,
+        )
+
+        try:
+
+            validate_metadata(
+                metadata
+            )
+
+            logger.info(
+                "Metadata validation successful."
+            )
+
+            return metadata
+
+        except Exception as validation_error:
+
+            logger.warning(
+                "Gemini metadata failed validation: %s",
+                validation_error,
+            )
+
+            logger.warning(
+                "Switching to universal comedy fallback metadata."
+            )
+
+            fallback = (
+                get_fallback_comedy_metadata()
+            )
+
+            validate_metadata(
+                fallback
+            )
+
+            return fallback
+
+    except Exception as exc:
+
+        logger.warning(
+            "Metadata generation process failed: %s",
+            exc,
+        )
+
+        logger.warning(
+            "Switching to universal comedy fallback metadata."
+        )
+
+        fallback = (
+            get_fallback_comedy_metadata()
+        )
+
+        validate_metadata(
+            fallback
+        )
+
+        return fallback
 
 
 # ============================================================
@@ -1082,7 +1597,9 @@ def process_video(
     gemini_client,
     video,
 ):
+
     video_id = video["id"]
+
     video_name = video["name"]
 
     logger.info(
@@ -1098,6 +1615,7 @@ def process_video(
         drive_service,
         video_name,
     ):
+
         logger.info(
             "Metadata already exists. Skipping: %s",
             video_name,
@@ -1110,11 +1628,13 @@ def process_video(
     # --------------------------------------------------------
 
     size_bytes = int(
-        video.get("size") or 0
+        video.get("size")
+        or 0
     )
 
-    size_mb = size_bytes / (
-        1024 * 1024
+    size_mb = (
+        size_bytes
+        / (1024 * 1024)
     )
 
     if size_mb > MAX_VIDEO_SIZE_MB:
@@ -1131,11 +1651,20 @@ def process_video(
 
     safe_name = (
         video_name
-        .replace("/", "_")
-        .replace("\\", "_")
+        .replace(
+            "/",
+            "_"
+        )
+        .replace(
+            "\\",
+            "_"
+        )
     )
 
-    video_path = WORK_DIR / safe_name
+    video_path = (
+        WORK_DIR
+        / safe_name
+    )
 
     metadata_path = (
         WORK_DIR
@@ -1156,9 +1685,11 @@ def process_video(
     # Gemini video upload
     # --------------------------------------------------------
 
-    uploaded_file = upload_video_to_gemini(
-        gemini_client,
-        video_path,
+    uploaded_file = (
+        upload_video_to_gemini(
+            gemini_client,
+            video_path,
+        )
     )
 
     try:
@@ -1180,47 +1711,47 @@ def process_video(
         # YouTube research
         # ----------------------------------------------------
 
-        youtube_results = collect_youtube_research(
-            analysis
+        youtube_results = (
+            collect_youtube_research(
+                analysis
+            )
         )
 
         # ----------------------------------------------------
         # Current web research
         # ----------------------------------------------------
 
-        web_research = web_trend_research(
-            gemini_client,
-            analysis,
+        web_research = (
+            web_trend_research(
+                gemini_client,
+                analysis,
+            )
         )
 
         # ----------------------------------------------------
         # Final metadata
         # ----------------------------------------------------
 
-        metadata = generate_metadata(
-            gemini_client,
-            analysis,
-            youtube_results,
-            web_research,
-        )
-
-        # ----------------------------------------------------
-        # Quality gate
-        # ----------------------------------------------------
-
-        validate_metadata(
-            metadata
+        metadata = (
+            generate_valid_metadata(
+                gemini_client,
+                analysis,
+                youtube_results,
+                web_research,
+            )
         )
 
         # ----------------------------------------------------
         # Build TXT
         # ----------------------------------------------------
 
-        final_text = build_metadata_file(
-            video_name,
-            analysis,
-            web_research,
-            metadata,
+        final_text = (
+            build_metadata_file(
+                video_name,
+                analysis,
+                web_research,
+                metadata,
+            )
         )
 
         metadata_path.write_text(
@@ -1247,16 +1778,21 @@ def process_video(
 
     finally:
 
-        # Remove local Gemini/temporary files.
+        # Remove local temporary files.
+
         try:
+
             if video_path.exists():
                 video_path.unlink()
+
         except Exception:
             pass
 
         try:
+
             if metadata_path.exists():
                 metadata_path.unlink()
+
         except Exception:
             pass
 
@@ -1271,12 +1807,18 @@ def main():
         "========== CODE 1 START =========="
     )
 
-    drive_service = get_drive_service()
+    drive_service = (
+        get_drive_service()
+    )
 
-    gemini_client = get_gemini_client()
+    gemini_client = (
+        get_gemini_client()
+    )
 
-    videos = list_input_videos(
-        drive_service
+    videos = (
+        list_input_videos(
+            drive_service
+        )
     )
 
     if not videos:
@@ -1298,7 +1840,9 @@ def main():
     ]
 
     success_count = 0
+
     skipped_count = 0
+
     failed_count = 0
 
     log_lines = []
@@ -1316,13 +1860,16 @@ def main():
             )
 
             if result == "SUCCESS":
+
                 success_count += 1
 
             elif result == "SKIPPED":
+
                 skipped_count += 1
 
             log_lines.append(
-                f"SUCCESS/SKIPPED: {video_name} -> {result}"
+                f"SUCCESS/SKIPPED: "
+                f"{video_name} -> {result}"
             )
 
         except Exception as exc:
@@ -1339,7 +1886,8 @@ def main():
             )
 
             log_lines.append(
-                f"FAILED: {video_name} -> {error_message}"
+                f"FAILED: {video_name} "
+                f"-> {error_message}"
             )
 
             # ------------------------------------------------
@@ -1354,7 +1902,8 @@ def main():
                 )
 
                 log_lines.append(
-                    f"MOVED_TO_FAILED: {video_name}"
+                    f"MOVED_TO_FAILED: "
+                    f"{video_name}"
                 )
 
             except Exception as move_exc:
@@ -1389,7 +1938,9 @@ def main():
         summary,
     )
 
-    logger.info(summary)
+    logger.info(
+        summary
+    )
 
     logger.info(
         "========== CODE 1 END =========="
