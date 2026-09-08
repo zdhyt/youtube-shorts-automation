@@ -1,0 +1,60 @@
+name: Code 2 - YouTube Upload
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    # 9:00 AM IST publish
+    - cron: "30 3 * * *"
+
+    # 6:00 PM IST publish
+    - cron: "30 12 * * *"
+
+jobs:
+  code2:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Determine publish time
+        id: publish
+        run: |
+          if [ "${{ github.event.schedule }}" = "30 3 * * *" ]; then
+            echo "publish_hour=9" >> "$GITHUB_OUTPUT"
+            echo "publish_minute=0" >> "$GITHUB_OUTPUT"
+          else
+            echo "publish_hour=18" >> "$GITHUB_OUTPUT"
+            echo "publish_minute=0" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run Code 2
+        env:
+          GOOGLE_DRIVE_REFRESH_TOKEN: ${{ secrets.GOOGLE_DRIVE_REFRESH_TOKEN }}
+          GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+          GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
+
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+
+          DRIVE_INPUT_FOLDER_ID: ${{ secrets.DRIVE_INPUT_FOLDER_ID }}
+          DRIVE_METADATA_FOLDER_ID: ${{ secrets.DRIVE_METADATA_FOLDER_ID }}
+          DRIVE_UPLOADED_FOLDER_ID: ${{ secrets.DRIVE_UPLOADED_FOLDER_ID }}
+
+          PUBLISH_HOUR: ${{ steps.publish.outputs.publish_hour }}
+          PUBLISH_MINUTE: ${{ steps.publish.outputs.publish_minute }}
+
+        run: python code2.py
