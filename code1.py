@@ -20,22 +20,33 @@ from googleapiclient.http import MediaIoBaseDownload, MediaFileUpload
 # CONFIGURATION
 # ============================================================
 
-# Keep the model name here so it can be changed easily later.
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
+# Primary Gemini model.
+# Can be changed later through the GEMINI_MODEL environment variable.
+GEMINI_MODEL = os.getenv(
+    "GEMINI_MODEL",
+    "gemini-3.8-flash"
+)
 
-# Automatic fallback models if the primary model is unavailable.
+# Automatic Gemini fallback models.
 GEMINI_FALLBACK_MODELS = [
     GEMINI_MODEL,
     "gemini-3.6-flash",
     "gemini-3.5-flash",
 ]
 
-# IMPORTANT:
 # Keep this at 1 while testing.
-MAX_VIDEOS_PER_RUN = int(os.getenv("MAX_VIDEOS_PER_RUN", "1"))
+MAX_VIDEOS_PER_RUN = int(
+    os.getenv(
+        "MAX_VIDEOS_PER_RUN",
+        "1"
+    )
+)
 
 MAX_VIDEO_SIZE_MB = int(
-    os.getenv("MAX_VIDEO_SIZE_MB", "500")
+    os.getenv(
+        "MAX_VIDEO_SIZE_MB",
+        "500"
+    )
 )
 
 VIDEO_EXTENSIONS = {
@@ -47,245 +58,25 @@ VIDEO_EXTENSIONS = {
     ".mkv",
 }
 
-DRIVE_SCOPE = "https://www.googleapis.com/auth/drive"
+DRIVE_SCOPE = (
+    "https://www.googleapis.com/auth/drive"
+)
 
 INDIA_REGION = "IN"
 INDIA_LANGUAGE = "en"
 
 
 # ============================================================
-# UNIVERSAL COMEDY FALLBACK METADATA
-# ============================================================
-
-FALLBACK_COMEDY_METADATA = [
-
-    # --------------------------------------------------------
-    # FALLBACK 1
-    # --------------------------------------------------------
-    """TITLE_1:
-Try Not to Laugh 😂 | Funniest Comedy Moments
-
-TITLE_2:
-You'll Try Not to Laugh at These 😂
-
-TITLE_3:
-Funniest Moments You Need to See 😂
-
-RECOMMENDED_TITLE:
-Try Not to Laugh 😂 | Funniest Comedy Moments
-
-DESCRIPTION:
-😂 Think you can watch this without laughing? Enjoy a collection of hilarious comedy moments, unexpected reactions, and funny situations packed into one entertaining compilation. Watch until the end and try your best not to laugh!
-
-HASHTAGS:
-#Shorts #Comedy #Funny #TryNotToLaugh #FunnyMoments #ComedyCompilation #FunnyVideos #Humor #Laugh #Entertainment #ComedyShorts #ViralShorts
-
-CONTENT_SCORE:
-5
-
-TREND_SCORE:
-5
-
-RELEVANCE_DECISION:
-NO_TREND
-
-RELEVANCE_REASON:
-Universal fallback metadata for comedy compilation content because AI metadata generation was unavailable.
-
-TREND_ANGLE:
-Try-not-to-laugh comedy and entertaining funny moments
-
-KEYWORDS:
-try not to laugh, comedy, funny moments, comedy compilation, funny videos, humor, laughter, entertainment, comedy shorts
-""",
-
-    # --------------------------------------------------------
-    # FALLBACK 2
-    # --------------------------------------------------------
-    """TITLE_1:
-Funniest Comedy Moments 😂 | Watch Till the End
-
-TITLE_2:
-These Funny Moments Are Too Good 😂
-
-TITLE_3:
-A Compilation of Hilarious Moments 😂
-
-RECOMMENDED_TITLE:
-Funniest Comedy Moments 😂 | Watch Till the End
-
-DESCRIPTION:
-😂 Here comes a collection of hilarious comedy moments to bring some fun to your day! From unexpected situations to unforgettable funny moments, enjoy this entertaining comedy compilation and watch till the end.
-
-HASHTAGS:
-#Shorts #Funny #Comedy #FunnyMoments #ComedyCompilation #Hilarious #Humor #Laugh #Entertainment #FunnyVideos #ComedyShorts #TrendingShorts
-
-CONTENT_SCORE:
-5
-
-TREND_SCORE:
-5
-
-RELEVANCE_DECISION:
-NO_TREND
-
-RELEVANCE_REASON:
-Universal fallback metadata for comedy compilation content because AI metadata generation was unavailable.
-
-TREND_ANGLE:
-Funny moments and general comedy entertainment
-
-KEYWORDS:
-funniest moments, comedy, funny videos, hilarious moments, comedy compilation, humor, entertainment, funny shorts, laughter
-""",
-
-    # --------------------------------------------------------
-    # FALLBACK 3
-    # --------------------------------------------------------
-    """TITLE_1:
-When Comedy Gets Unexpected 😂 | Funniest Moments
-
-TITLE_2:
-You Never Know What Happens Next 😂
-
-TITLE_3:
-Unexpected Funny Moments 😂 | Comedy Compilation
-
-RECOMMENDED_TITLE:
-When Comedy Gets Unexpected 😂 | Funniest Moments
-
-DESCRIPTION:
-😂 Sometimes the funniest moments are the ones nobody expects! Enjoy this collection of unexpected, hilarious, and entertaining comedy moments. Stay until the end because you never know what funny moment comes next!
-
-HASHTAGS:
-#Shorts #Comedy #Funny #Unexpected #FunnyMoments #ComedyCompilation #Hilarious #Humor #FunnyVideos #Laugh #Entertainment #ComedyShorts
-
-CONTENT_SCORE:
-5
-
-TREND_SCORE:
-5
-
-RELEVANCE_DECISION:
-NO_TREND
-
-RELEVANCE_REASON:
-Universal fallback metadata for comedy compilation content because AI metadata generation was unavailable.
-
-TREND_ANGLE:
-Unexpected moments and surprise-based comedy
-
-KEYWORDS:
-unexpected funny moments, comedy, funny videos, hilarious moments, comedy compilation, surprise, humor, entertainment, funny shorts
-""",
-
-    # --------------------------------------------------------
-    # FALLBACK 4
-    # --------------------------------------------------------
-    """TITLE_1:
-Ultimate Comedy Compilation 😂 | Non-Stop Funny Moments
-
-TITLE_2:
-Non-Stop Laughs 😂 | Best Comedy Moments
-
-TITLE_3:
-This Comedy Compilation Is Too Funny 😂
-
-RECOMMENDED_TITLE:
-Ultimate Comedy Compilation 😂 | Non-Stop Funny Moments
-
-DESCRIPTION:
-😂 Get ready for non-stop laughs with a compilation of entertaining comedy moments and hilarious situations. Sit back, enjoy the funniest moments, and share the laughter with someone who loves comedy!
-
-HASHTAGS:
-#Shorts #Comedy #Funny #ComedyCompilation #FunnyMoments #NonStopLaughs #Hilarious #Humor #Entertainment #FunnyVideos #Laugh #ComedyShorts
-
-CONTENT_SCORE:
-5
-
-TREND_SCORE:
-5
-
-RELEVANCE_DECISION:
-NO_TREND
-
-RELEVANCE_REASON:
-Universal fallback metadata for comedy compilation content because AI metadata generation was unavailable.
-
-TREND_ANGLE:
-Compilation-style comedy entertainment and continuous funny moments
-
-KEYWORDS:
-comedy compilation, funny moments, non stop laughs, funny videos, hilarious, humor, entertainment, comedy shorts, laughter
-""",
-
-    # --------------------------------------------------------
-    # FALLBACK 5
-    # --------------------------------------------------------
-    """TITLE_1:
-Can You Watch This Without Laughing? 😂
-
-TITLE_2:
-Try to Keep a Straight Face 😂 | Comedy Compilation
-
-TITLE_3:
-The Ultimate Laugh Challenge 😂
-
-RECOMMENDED_TITLE:
-Can You Watch This Without Laughing? 😂
-
-DESCRIPTION:
-😂 Here's your next laugh challenge! Enjoy a collection of funny and entertaining comedy moments and see if you can keep a straight face from beginning to end. If you love comedy, this one is for you!
-
-HASHTAGS:
-#Shorts #Comedy #Funny #LaughChallenge #TryNotToLaugh #FunnyMoments #ComedyCompilation #StraightFace #Humor #Entertainment #FunnyVideos #ComedyShorts
-
-CONTENT_SCORE:
-5
-
-TREND_SCORE:
-5
-
-RELEVANCE_DECISION:
-NO_TREND
-
-RELEVANCE_REASON:
-Universal fallback metadata for comedy compilation content because AI metadata generation was unavailable.
-
-TREND_ANGLE:
-Laugh challenge and try-not-to-laugh comedy
-
-KEYWORDS:
-laugh challenge, try not to laugh, comedy, funny moments, comedy compilation, funny videos, straight face challenge, humor, entertainment
-"""
-]
-
-
-def get_fallback_comedy_metadata():
-    """
-    Randomly select one universal comedy metadata set.
-
-    This is used when Gemini metadata generation fails
-    or generated metadata fails validation.
-    """
-
-    selected = random.choice(
-        FALLBACK_COMEDY_METADATA
-    )
-
-    logger.warning(
-        "Using randomly selected universal comedy fallback metadata."
-    )
-
-    return selected.strip()
-
-
-# ============================================================
 # ENVIRONMENT / SECRETS
 # ============================================================
 
-GEMINI_API_KEY = os.environ["GEMINI_API_KEY"]
-YOUTUBE_API_KEY = os.environ["YOUTUBE_API_KEY"]
+GEMINI_API_KEY = os.environ[
+    "GEMINI_API_KEY"
+]
+
+YOUTUBE_API_KEY = os.environ[
+    "YOUTUBE_API_KEY"
+]
 
 DRIVE_REFRESH_TOKEN = os.environ[
     "GOOGLE_DRIVE_REFRESH_TOKEN"
@@ -322,7 +113,11 @@ DRIVE_LOGS_FOLDER_ID = os.environ[
 
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s | %(levelname)s | %(message)s",
+    format=(
+        "%(asctime)s | "
+        "%(levelname)s | "
+        "%(message)s"
+    ),
 )
 
 logger = logging.getLogger(
@@ -335,7 +130,238 @@ logger = logging.getLogger(
 # ============================================================
 
 WORK_DIR = Path("work")
-WORK_DIR.mkdir(exist_ok=True)
+WORK_DIR.mkdir(
+    exist_ok=True
+)
+
+
+# ============================================================
+# UNIVERSAL FALLBACK METADATA
+# ============================================================
+
+# IMPORTANT:
+#
+# These are used ONLY when AI metadata generation fails.
+#
+# Five different complete metadata sets are provided.
+# One set is selected randomly for each failed generation.
+#
+# These are intentionally written for comedy / funny-video
+# compilation content and avoid making claims about specific
+# people, scenes, jokes, locations, or events.
+#
+# This means they remain relatively safe as universal fallback
+# metadata.
+
+
+UNIVERSAL_COMEDY_METADATA = [
+
+    {
+        "TITLE_1": "The Funniest Moments You Need to See 😂",
+        "TITLE_2": "Try Not to Laugh at These Moments 😂",
+        "TITLE_3": "These Funny Moments Are Too Good 😂",
+        "RECOMMENDED_TITLE": "Try Not to Laugh at These Moments 😂",
+        "DESCRIPTION": (
+            "A collection of hilarious comedy moments packed "
+            "with funny reactions, unexpected situations and "
+            "plenty of laughs. Watch till the end and enjoy "
+            "the funniest moments!"
+        ),
+        "HASHTAGS": (
+            "#Comedy #Funny #FunnyVideos "
+            "#ComedyClips #Laugh #Humor #Entertainment"
+        ),
+        "CONTENT_SCORE": "8",
+        "TREND_SCORE": "7",
+        "RELEVANCE_DECISION": "NO_TREND",
+        "RELEVANCE_REASON": (
+            "Universal comedy metadata is being used because "
+            "AI metadata generation was unavailable."
+        ),
+        "TREND_ANGLE": (
+            "No specific trend applied."
+        ),
+        "KEYWORDS": (
+            "comedy, funny moments, funny videos, "
+            "comedy clips, humor"
+        ),
+    },
+
+    {
+        "TITLE_1": "You Won't Stop Laughing at These 😂",
+        "TITLE_2": "Funniest Comedy Moments Compilation 😂",
+        "TITLE_3": "This Comedy Compilation Is Too Funny 😂",
+        "RECOMMENDED_TITLE": "You Won't Stop Laughing at These 😂",
+        "DESCRIPTION": (
+            "Get ready for a fun collection of comedy moments "
+            "and hilarious situations. If you enjoy funny "
+            "videos and comedy clips, this compilation is "
+            "made for a good laugh!"
+        ),
+        "HASHTAGS": (
+            "#Funny #Comedy #Laugh "
+            "#FunnyMoments #ComedyVideos #Humor #Fun"
+        ),
+        "CONTENT_SCORE": "8",
+        "TREND_SCORE": "7",
+        "RELEVANCE_DECISION": "NO_TREND",
+        "RELEVANCE_REASON": (
+            "Universal comedy metadata is being used because "
+            "AI metadata generation was unavailable."
+        ),
+        "TREND_ANGLE": (
+            "No specific trend applied."
+        ),
+        "KEYWORDS": (
+            "funny, comedy compilation, hilarious moments, "
+            "funny clips, entertainment"
+        ),
+    },
+
+    {
+        "TITLE_1": "Best Funny Moments in One Video 😂",
+        "TITLE_2": "These Comedy Moments Are Hilarious 😂",
+        "TITLE_3": "Warning: You Might Laugh Too Much 😂",
+        "RECOMMENDED_TITLE": "Warning: You Might Laugh Too Much 😂",
+        "DESCRIPTION": (
+            "Enjoy a quick dose of comedy with funny moments, "
+            "unexpected reactions and entertaining clips. "
+            "Sit back, watch and have a laugh!"
+        ),
+        "HASHTAGS": (
+            "#Comedy #FunnyVideos #Hilarious "
+            "#FunnyMoments #Laughing #Humor #ComedyClips"
+        ),
+        "CONTENT_SCORE": "8",
+        "TREND_SCORE": "6",
+        "RELEVANCE_DECISION": "NO_TREND",
+        "RELEVANCE_REASON": (
+            "Universal comedy metadata is being used because "
+            "AI metadata generation was unavailable."
+        ),
+        "TREND_ANGLE": (
+            "No specific trend applied."
+        ),
+        "KEYWORDS": (
+            "funny moments, comedy, hilarious videos, "
+            "laughing, comedy compilation"
+        ),
+    },
+
+    {
+        "TITLE_1": "Can't Watch This Without Laughing 😂",
+        "TITLE_2": "A Dose of Pure Comedy 😂",
+        "TITLE_3": "Funniest Clips That Made Us Laugh 😂",
+        "RECOMMENDED_TITLE": "Can't Watch This Without Laughing 😂",
+        "DESCRIPTION": (
+            "Here is a collection of entertaining comedy "
+            "moments for anyone who loves a good laugh. "
+            "Enjoy the funny clips and share the laughter!"
+        ),
+        "HASHTAGS": (
+            "#Comedy #Funny #Humor "
+            "#FunnyClips #ComedyCompilation #Laugh #Fun"
+        ),
+        "CONTENT_SCORE": "8",
+        "TREND_SCORE": "6",
+        "RELEVANCE_DECISION": "NO_TREND",
+        "RELEVANCE_REASON": (
+            "Universal comedy metadata is being used because "
+            "AI metadata generation was unavailable."
+        ),
+        "TREND_ANGLE": (
+            "No specific trend applied."
+        ),
+        "KEYWORDS": (
+            "comedy, funny clips, humor, funny compilation, "
+            "entertainment"
+        ),
+    },
+
+    {
+        "TITLE_1": "The Comedy Compilation You Needed 😂",
+        "TITLE_2": "Pure Funny Moments From Start to Finish 😂",
+        "TITLE_3": "These Moments Are Seriously Funny 😂",
+        "RECOMMENDED_TITLE": "Pure Funny Moments From Start to Finish 😂",
+        "DESCRIPTION": (
+            "A fun compilation of comedy moments, funny "
+            "situations and entertaining clips. Perfect for "
+            "a quick laugh whenever you need one!"
+        ),
+        "HASHTAGS": (
+            "#Funny #Comedy #Entertainment "
+            "#FunnyVideos #ComedyClips #Humor #Laugh"
+        ),
+        "CONTENT_SCORE": "8",
+        "TREND_SCORE": "7",
+        "RELEVANCE_DECISION": "NO_TREND",
+        "RELEVANCE_REASON": (
+            "Universal comedy metadata is being used because "
+            "AI metadata generation was unavailable."
+        ),
+        "TREND_ANGLE": (
+            "No specific trend applied."
+        ),
+        "KEYWORDS": (
+            "comedy compilation, funny videos, "
+            "funny moments, comedy clips, humor"
+        ),
+    },
+
+]
+
+
+def get_random_fallback_metadata():
+    """
+    Randomly select one of the five universal comedy
+    metadata sets.
+    """
+
+    selected = random.choice(
+        UNIVERSAL_COMEDY_METADATA
+    )
+
+    logger.warning(
+        "Using RANDOM UNIVERSAL COMEDY FALLBACK metadata."
+    )
+
+    return (
+        "TITLE_1:\n"
+        f"{selected['TITLE_1']}\n\n"
+
+        "TITLE_2:\n"
+        f"{selected['TITLE_2']}\n\n"
+
+        "TITLE_3:\n"
+        f"{selected['TITLE_3']}\n\n"
+
+        "RECOMMENDED_TITLE:\n"
+        f"{selected['RECOMMENDED_TITLE']}\n\n"
+
+        "DESCRIPTION:\n"
+        f"{selected['DESCRIPTION']}\n\n"
+
+        "HASHTAGS:\n"
+        f"{selected['HASHTAGS']}\n\n"
+
+        "CONTENT_SCORE:\n"
+        f"{selected['CONTENT_SCORE']}\n\n"
+
+        "TREND_SCORE:\n"
+        f"{selected['TREND_SCORE']}\n\n"
+
+        "RELEVANCE_DECISION:\n"
+        f"{selected['RELEVANCE_DECISION']}\n\n"
+
+        "RELEVANCE_REASON:\n"
+        f"{selected['RELEVANCE_REASON']}\n\n"
+
+        "TREND_ANGLE:\n"
+        f"{selected['TREND_ANGLE']}\n\n"
+
+        "KEYWORDS:\n"
+        f"{selected['KEYWORDS']}\n"
+    )
 
 
 # ============================================================
@@ -351,7 +377,9 @@ def get_drive_service():
     credentials = Credentials(
         token=None,
         refresh_token=DRIVE_REFRESH_TOKEN,
-        token_uri="https://oauth2.googleapis.com/token",
+        token_uri=(
+            "https://oauth2.googleapis.com/token"
+        ),
         client_id=GOOGLE_OAUTH_CLIENT_ID,
         client_secret=GOOGLE_OAUTH_CLIENT_SECRET,
         scopes=[DRIVE_SCOPE],
@@ -382,8 +410,14 @@ def list_input_videos(drive_service):
             pageSize=100,
             orderBy="createdTime",
             fields=(
-                "files(id,name,mimeType,size,"
-                "createdTime,modifiedTime)"
+                "files("
+                "id,"
+                "name,"
+                "mimeType,"
+                "size,"
+                "createdTime,"
+                "modifiedTime"
+                ")"
             ),
         )
         .execute()
@@ -427,16 +461,19 @@ def metadata_exists(
     )
 
     escaped_name = (
-        metadata_name.replace(
-            chr(39),
-            chr(39) + chr(39)
+        metadata_name
+        .replace(
+            "'",
+            "''"
         )
     )
 
     query = (
-        f"'{DRIVE_METADATA_FOLDER_ID}' in parents "
-        f"and name = '{escaped_name}' "
-        f"and trashed = false"
+        f"'{DRIVE_METADATA_FOLDER_ID}' "
+        "in parents "
+        "and name = "
+        f"'{escaped_name}' "
+        "and trashed = false"
     )
 
     response = (
@@ -449,12 +486,15 @@ def metadata_exists(
         .execute()
     )
 
-    return len(
-        response.get(
-            "files",
-            []
+    return (
+        len(
+            response.get(
+                "files",
+                []
+            )
         )
-    ) > 0
+        > 0
+    )
 
 
 def download_drive_file(
@@ -478,9 +518,11 @@ def download_drive_file(
         "wb"
     ) as fh:
 
-        downloader = MediaIoBaseDownload(
-            fh,
-            request,
+        downloader = (
+            MediaIoBaseDownload(
+                fh,
+                request
+            )
         )
 
         done = False
@@ -495,7 +537,8 @@ def download_drive_file(
 
                 logger.info(
                     "Download progress: %.1f%%",
-                    status.progress() * 100,
+                    status.progress()
+                    * 100,
                 )
 
 
@@ -657,7 +700,8 @@ def upload_video_to_gemini(
         ):
 
             raise TimeoutError(
-                "Gemini video processing timed out."
+                "Gemini video processing "
+                "timed out."
             )
 
         time.sleep(5)
@@ -677,6 +721,9 @@ def analyze_video(
 ):
     """
     Understand the Short.
+
+    Gemini is asked to identify what is actually in
+    the video.
     """
 
     prompt = """
@@ -695,9 +742,9 @@ Identify:
 7. Names of people/brands/places only when reasonably certain.
 8. Likely audience.
 9. Important keywords.
-10. Whether the content is factual, entertainment, educational,
-    news/current affairs, commentary, reaction, sports, technology,
-    comedy, lifestyle, etc.
+10. Whether the content is factual, entertainment,
+    educational, news/current affairs, commentary,
+    reaction, sports, technology, comedy, lifestyle, etc.
 
 Do not invent facts.
 
@@ -748,7 +795,8 @@ CONFIDENCE:
             )
 
             text = (
-                response.text.strip()
+                response.text
+                .strip()
             )
 
             if text:
@@ -763,7 +811,8 @@ CONFIDENCE:
             )
 
     raise RuntimeError(
-        "All Gemini video-analysis models failed."
+        "All Gemini video-analysis "
+        "models failed."
     )
 
 
@@ -800,7 +849,8 @@ def youtube_search(query):
     }
 
     response = requests.get(
-        "https://www.googleapis.com/youtube/v3/search",
+        "https://www.googleapis.com/"
+        "youtube/v3/search",
         params=params,
         timeout=30,
     )
@@ -849,7 +899,7 @@ def collect_youtube_research(
     analysis_text,
 ):
     """
-    Use the topic/keywords from the video analysis
+    Use topic/keywords from video analysis
     to collect recent YouTube signals.
     """
 
@@ -866,13 +916,17 @@ def collect_youtube_research(
     searches = []
 
     if topic:
-        searches.append(topic)
+        searches.append(
+            topic
+        )
 
     if keywords:
 
         first_keywords = [
             x.strip()
-            for x in keywords.split(",")
+            for x in keywords.split(
+                ","
+            )
             if x.strip()
         ]
 
@@ -924,8 +978,8 @@ def web_trend_research(
     analysis_text,
 ):
     """
-    Gemini uses Google Search grounding to research current
-    web information.
+    Gemini uses Google Search grounding to research
+    current web information.
     """
 
     prompt = f"""
@@ -935,8 +989,8 @@ Use Google Search to find CURRENT and RELEVANT information.
 
 Do NOT force trends into the content.
 
-A trend is useful only if it is genuinely connected to
-the Short's subject.
+A trend is useful only if it is genuinely connected
+to the Short's subject.
 
 VIDEO ANALYSIS:
 {analysis_text}
@@ -999,7 +1053,8 @@ RESEARCH_SUMMARY:
             if response.text:
 
                 return (
-                    response.text.strip()
+                    response.text
+                    .strip()
                 )
 
         except Exception as exc:
@@ -1010,13 +1065,21 @@ RESEARCH_SUMMARY:
                 exc,
             )
 
+    logger.warning(
+        "All Gemini web research attempts failed. "
+        "Continuing without current web research."
+    )
+
     return (
         "TREND_RELEVANCE:\n"
         "5\n\n"
+
         "CURRENT_ANGLE:\n"
         "No reliable current angle found.\n\n"
+
         "IMPORTANT_FACT_CHECK:\n"
         "No additional fact check available.\n\n"
+
         "RESEARCH_SUMMARY:\n"
         "Current web research was unavailable."
     )
@@ -1033,11 +1096,10 @@ def generate_metadata(
     web_research,
 ):
     """
-    Generate the final Shorts metadata.
+    Generate the final Shorts metadata with Gemini.
 
-    If all Gemini metadata-generation attempts fail,
-    automatically use one of the five universal comedy
-    fallback metadata sets.
+    If ALL Gemini attempts fail, this function automatically
+    selects one of the five universal comedy metadata sets.
     """
 
     youtube_context = "\n".join(
@@ -1054,7 +1116,8 @@ def generate_metadata(
     if not youtube_context:
 
         youtube_context = (
-            "No useful YouTube search results were found."
+            "No useful YouTube search "
+            "results were found."
         )
 
     prompt = f"""
@@ -1078,11 +1141,11 @@ IMPORTANT RULES:
 - Select exactly ONE recommended title.
 - Generate 5 to 8 relevant hashtags.
 - Hashtags must actually relate to the video.
-- Do not use #Shorts unless it naturally fits.
 - Do not use unrelated celebrity/news hashtags.
 - Description should be concise and useful.
 - Do not repeat the same sentence several times.
-- Do not claim something happened if it isn't supported by the video.
+- Do not claim something happened if it isn't supported
+  by the video.
 
 VIDEO ANALYSIS:
 {analysis_text}
@@ -1134,6 +1197,8 @@ KEYWORDS:
 keyword1, keyword2, keyword3, keyword4, keyword5
 """
 
+    last_error = None
+
     for model in GEMINI_FALLBACK_MODELS:
 
         try:
@@ -1151,31 +1216,52 @@ keyword1, keyword2, keyword3, keyword4, keyword5
             )
 
             text = (
-                response.text.strip()
+                response.text
+                .strip()
             )
 
             if text:
+
+                logger.info(
+                    "Gemini metadata generation "
+                    "successful with %s",
+                    model,
+                )
+
                 return text
 
         except Exception as exc:
 
+            last_error = exc
+
             logger.warning(
-                "Metadata generation failed with %s: %s",
+                "Metadata generation failed "
+                "with %s: %s",
                 model,
                 exc,
             )
 
-    # --------------------------------------------------------
-    # Gemini completely failed.
-    # Use one of the five universal metadata sets.
-    # --------------------------------------------------------
+    # ========================================================
+    # IMPORTANT FALLBACK
+    # ========================================================
 
-    logger.warning(
-        "All Gemini metadata-generation models failed. "
-        "Using universal comedy fallback metadata."
+    logger.error(
+        "ALL GEMINI METADATA GENERATION ATTEMPTS FAILED."
     )
 
-    return get_fallback_comedy_metadata()
+    if last_error:
+
+        logger.error(
+            "Last Gemini metadata error: %s",
+            last_error,
+        )
+
+    logger.warning(
+        "Switching automatically to one of "
+        "five universal comedy metadata sets."
+    )
+
+    return get_random_fallback_metadata()
 
 
 # ============================================================
@@ -1200,9 +1286,12 @@ def extract_field(
     )
 
     if start == -1:
+
         return ""
 
-    start += len(marker)
+    start += len(
+        marker
+    )
 
     remaining = text[start:]
 
@@ -1224,7 +1313,8 @@ def extract_field(
         # Stop when another uppercase field begins.
         if (
             ":" in stripped
-            and stripped.split(
+            and stripped
+            .split(
                 ":",
                 1
             )[0]
@@ -1234,10 +1324,12 @@ def extract_field(
                 ""
             )
             .isalnum()
-            and stripped.split(
+            and stripped
+            .split(
                 ":",
                 1
-            )[0].isupper()
+            )[0]
+            .isupper()
         ):
 
             break
@@ -1246,9 +1338,10 @@ def extract_field(
             stripped
         )
 
-    return "\n".join(
-        values
-    ).strip()
+    return (
+        "\n".join(values)
+        .strip()
+    )
 
 
 # ============================================================
@@ -1259,7 +1352,7 @@ def validate_metadata(
     metadata_text,
 ):
     """
-    Basic quality gate before saving the TXT.
+    Basic quality gate before saving TXT.
     """
 
     required_fields = [
@@ -1334,88 +1427,6 @@ def validate_metadata(
 
 
 # ============================================================
-# SAFE METADATA GENERATION
-# ============================================================
-
-def generate_valid_metadata(
-    client,
-    analysis_text,
-    youtube_results,
-    web_research,
-):
-    """
-    Generate metadata with an additional safety layer.
-
-    If Gemini fails completely OR returns malformed metadata,
-    automatically select one of the five universal comedy
-    fallback metadata sets.
-    """
-
-    try:
-
-        metadata = generate_metadata(
-            client,
-            analysis_text,
-            youtube_results,
-            web_research,
-        )
-
-        try:
-
-            validate_metadata(
-                metadata
-            )
-
-            logger.info(
-                "Metadata validation successful."
-            )
-
-            return metadata
-
-        except Exception as validation_error:
-
-            logger.warning(
-                "Gemini metadata failed validation: %s",
-                validation_error,
-            )
-
-            logger.warning(
-                "Switching to universal comedy fallback metadata."
-            )
-
-            fallback = (
-                get_fallback_comedy_metadata()
-            )
-
-            validate_metadata(
-                fallback
-            )
-
-            return fallback
-
-    except Exception as exc:
-
-        logger.warning(
-            "Metadata generation process failed: %s",
-            exc,
-        )
-
-        logger.warning(
-            "Switching to universal comedy fallback metadata."
-        )
-
-        fallback = (
-            get_fallback_comedy_metadata()
-        )
-
-        validate_metadata(
-            fallback
-        )
-
-        return fallback
-
-
-# ============================================================
 # BUILD FINAL TXT
 # ============================================================
 
@@ -1426,7 +1437,8 @@ def build_metadata_file(
     metadata,
 ):
     """
-    Build the human-readable TXT that Code 2 will later use.
+    Build the human-readable TXT that Code 2
+    will later use.
     """
 
     title1 = extract_field(
@@ -1597,7 +1609,6 @@ def process_video(
     gemini_client,
     video,
 ):
-
     video_id = video["id"]
 
     video_name = video["name"]
@@ -1617,7 +1628,8 @@ def process_video(
     ):
 
         logger.info(
-            "Metadata already exists. Skipping: %s",
+            "Metadata already exists. "
+            "Skipping: %s",
             video_name,
         )
 
@@ -1628,20 +1640,28 @@ def process_video(
     # --------------------------------------------------------
 
     size_bytes = int(
-        video.get("size")
+        video.get(
+            "size"
+        )
         or 0
     )
 
     size_mb = (
         size_bytes
-        / (1024 * 1024)
+        / (
+            1024
+            * 1024
+        )
     )
 
-    if size_mb > MAX_VIDEO_SIZE_MB:
+    if (
+        size_mb
+        > MAX_VIDEO_SIZE_MB
+    ):
 
         raise ValueError(
             f"Video is {size_mb:.1f} MB, "
-            f"above configured limit "
+            "above configured limit "
             f"of {MAX_VIDEO_SIZE_MB} MB."
         )
 
@@ -1730,15 +1750,27 @@ def process_video(
 
         # ----------------------------------------------------
         # Final metadata
+        #
+        # IMPORTANT:
+        #
+        # generate_metadata() automatically switches to
+        # one of the five universal comedy metadata sets
+        # if Gemini metadata generation fails.
         # ----------------------------------------------------
 
-        metadata = (
-            generate_valid_metadata(
-                gemini_client,
-                analysis,
-                youtube_results,
-                web_research,
-            )
+        metadata = generate_metadata(
+            gemini_client,
+            analysis,
+            youtube_results,
+            web_research,
+        )
+
+        # ----------------------------------------------------
+        # Quality gate
+        # ----------------------------------------------------
+
+        validate_metadata(
+            metadata
         )
 
         # ----------------------------------------------------
@@ -1778,22 +1810,32 @@ def process_video(
 
     finally:
 
-        # Remove local temporary files.
+        # ----------------------------------------------------
+        # Remove local temporary video.
+        # ----------------------------------------------------
 
         try:
 
             if video_path.exists():
+
                 video_path.unlink()
 
         except Exception:
+
             pass
+
+        # ----------------------------------------------------
+        # Remove local metadata file.
+        # ----------------------------------------------------
 
         try:
 
             if metadata_path.exists():
+
                 metadata_path.unlink()
 
         except Exception:
+
             pass
 
 
@@ -1807,13 +1849,25 @@ def main():
         "========== CODE 1 START =========="
     )
 
+    # --------------------------------------------------------
+    # Connect to Drive
+    # --------------------------------------------------------
+
     drive_service = (
         get_drive_service()
     )
 
+    # --------------------------------------------------------
+    # Connect to Gemini
+    # --------------------------------------------------------
+
     gemini_client = (
         get_gemini_client()
     )
+
+    # --------------------------------------------------------
+    # Find videos
+    # --------------------------------------------------------
 
     videos = (
         list_input_videos(
@@ -1830,7 +1884,8 @@ def main():
         return
 
     logger.info(
-        "Found %d video(s). Maximum this run: %d",
+        "Found %d video(s). "
+        "Maximum this run: %d",
         len(videos),
         MAX_VIDEOS_PER_RUN,
     )
@@ -1847,9 +1902,15 @@ def main():
 
     log_lines = []
 
+    # --------------------------------------------------------
+    # Process videos
+    # --------------------------------------------------------
+
     for video in videos:
 
-        video_name = video["name"]
+        video_name = video[
+            "name"
+        ]
 
         try:
 
@@ -1868,7 +1929,7 @@ def main():
                 skipped_count += 1
 
             log_lines.append(
-                f"SUCCESS/SKIPPED: "
+                "SUCCESS/SKIPPED: "
                 f"{video_name} -> {result}"
             )
 
@@ -1877,7 +1938,8 @@ def main():
             failed_count += 1
 
             error_message = (
-                f"{type(exc).__name__}: {exc}"
+                f"{type(exc).__name__}: "
+                f"{exc}"
             )
 
             logger.exception(
@@ -1886,12 +1948,21 @@ def main():
             )
 
             log_lines.append(
-                f"FAILED: {video_name} "
-                f"-> {error_message}"
+                "FAILED: "
+                f"{video_name} -> "
+                f"{error_message}"
             )
 
             # ------------------------------------------------
             # Move failed video to 04_FAILED.
+            #
+            # This happens only if the COMPLETE processing
+            # fails, such as video upload/analysis/Drive
+            # failure.
+            #
+            # A Gemini metadata-generation failure alone
+            # should NOT reach here because the universal
+            # fallback metadata handles it.
             # ------------------------------------------------
 
             try:
@@ -1902,7 +1973,7 @@ def main():
                 )
 
                 log_lines.append(
-                    f"MOVED_TO_FAILED: "
+                    "MOVED_TO_FAILED: "
                     f"{video_name}"
                 )
 
@@ -1947,5 +2018,10 @@ def main():
     )
 
 
+# ============================================================
+# START
+# ============================================================
+
 if __name__ == "__main__":
+
     main()
