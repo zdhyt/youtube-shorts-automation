@@ -34,11 +34,23 @@ GEMINI_FALLBACK_MODELS = [
     "gemini-3.5-flash",
 ]
 
-# Keep this at 1 while testing.
+# ============================================================
+# VIDEO PROCESSING LIMIT
+# ============================================================
+#
+# 0 = process ALL videos in 01_INPUT.
+#
+# If you intentionally want to limit the number of videos,
+# set this to a positive number.
+#
+# Example:
+# 1 = process only 1 video
+# 3 = process only 3 videos
+#
 MAX_VIDEOS_PER_RUN = int(
     os.getenv(
         "MAX_VIDEOS_PER_RUN",
-        "1"
+        "0"
     )
 )
 
@@ -130,6 +142,7 @@ logger = logging.getLogger(
 # ============================================================
 
 WORK_DIR = Path("work")
+
 WORK_DIR.mkdir(
     exist_ok=True
 )
@@ -138,183 +151,279 @@ WORK_DIR.mkdir(
 # ============================================================
 # UNIVERSAL FALLBACK METADATA
 # ============================================================
-
-# IMPORTANT:
 #
-# These are used ONLY when AI metadata generation fails.
+# Used only if AI metadata generation completely fails.
 #
-# Five different complete metadata sets are provided.
-# One set is selected randomly for each failed generation.
+# Five different metadata sets are provided.
+# One is selected randomly.
 #
-# These are intentionally written for comedy / funny-video
-# compilation content and avoid making claims about specific
-# people, scenes, jokes, locations, or events.
-#
-# This means they remain relatively safe as universal fallback
-# metadata.
-
+# These are designed for comedy/funny-video content.
+# ============================================================
 
 UNIVERSAL_COMEDY_METADATA = [
 
     {
-        "TITLE_1": "The Funniest Moments You Need to See 😂",
-        "TITLE_2": "Try Not to Laugh at These Moments 😂",
-        "TITLE_3": "These Funny Moments Are Too Good 😂",
-        "RECOMMENDED_TITLE": "Try Not to Laugh at These Moments 😂",
-        "DESCRIPTION": (
-            "A collection of hilarious comedy moments packed "
-            "with funny reactions, unexpected situations and "
-            "plenty of laughs. Watch till the end and enjoy "
-            "the funniest moments!"
-        ),
-        "HASHTAGS": (
-            "#Comedy #Funny #FunnyVideos "
-            "#ComedyClips #Laugh #Humor #Entertainment"
-        ),
-        "CONTENT_SCORE": "8",
-        "TREND_SCORE": "7",
-        "RELEVANCE_DECISION": "NO_TREND",
-        "RELEVANCE_REASON": (
-            "Universal comedy metadata is being used because "
-            "AI metadata generation was unavailable."
-        ),
-        "TREND_ANGLE": (
-            "No specific trend applied."
-        ),
-        "KEYWORDS": (
-            "comedy, funny moments, funny videos, "
-            "comedy clips, humor"
-        ),
+        "TITLE_1":
+            "The Funniest Moments You Need to See 😂",
+
+        "TITLE_2":
+            "Try Not to Laugh at These Moments 😂",
+
+        "TITLE_3":
+            "These Funny Moments Are Too Good 😂",
+
+        "RECOMMENDED_TITLE":
+            "Try Not to Laugh at These Moments 😂",
+
+        "DESCRIPTION":
+            (
+                "A collection of hilarious comedy moments packed "
+                "with funny reactions, unexpected situations and "
+                "plenty of laughs. Watch till the end and enjoy "
+                "the funniest moments!"
+            ),
+
+        "HASHTAGS":
+            (
+                "#Comedy #Funny #FunnyVideos "
+                "#ComedyClips #Laugh #Humor #Entertainment"
+            ),
+
+        "CONTENT_SCORE":
+            "8",
+
+        "TREND_SCORE":
+            "7",
+
+        "RELEVANCE_DECISION":
+            "NO_TREND",
+
+        "RELEVANCE_REASON":
+            (
+                "Universal comedy metadata is being used because "
+                "AI metadata generation was unavailable."
+            ),
+
+        "TREND_ANGLE":
+            "No specific trend applied.",
+
+        "KEYWORDS":
+            (
+                "comedy, funny moments, funny videos, "
+                "comedy clips, humor"
+            ),
     },
 
     {
-        "TITLE_1": "You Won't Stop Laughing at These 😂",
-        "TITLE_2": "Funniest Comedy Moments Compilation 😂",
-        "TITLE_3": "This Comedy Compilation Is Too Funny 😂",
-        "RECOMMENDED_TITLE": "You Won't Stop Laughing at These 😂",
-        "DESCRIPTION": (
-            "Get ready for a fun collection of comedy moments "
-            "and hilarious situations. If you enjoy funny "
-            "videos and comedy clips, this compilation is "
-            "made for a good laugh!"
-        ),
-        "HASHTAGS": (
-            "#Funny #Comedy #Laugh "
-            "#FunnyMoments #ComedyVideos #Humor #Fun"
-        ),
-        "CONTENT_SCORE": "8",
-        "TREND_SCORE": "7",
-        "RELEVANCE_DECISION": "NO_TREND",
-        "RELEVANCE_REASON": (
-            "Universal comedy metadata is being used because "
-            "AI metadata generation was unavailable."
-        ),
-        "TREND_ANGLE": (
-            "No specific trend applied."
-        ),
-        "KEYWORDS": (
-            "funny, comedy compilation, hilarious moments, "
-            "funny clips, entertainment"
-        ),
+        "TITLE_1":
+            "You Won't Stop Laughing at These 😂",
+
+        "TITLE_2":
+            "Funniest Comedy Moments Compilation 😂",
+
+        "TITLE_3":
+            "This Comedy Compilation Is Too Funny 😂",
+
+        "RECOMMENDED_TITLE":
+            "You Won't Stop Laughing at These 😂",
+
+        "DESCRIPTION":
+            (
+                "Get ready for a fun collection of comedy moments "
+                "and hilarious situations. If you enjoy funny "
+                "videos and comedy clips, this compilation is "
+                "made for a good laugh!"
+            ),
+
+        "HASHTAGS":
+            (
+                "#Funny #Comedy #Laugh "
+                "#FunnyMoments #ComedyVideos #Humor #Fun"
+            ),
+
+        "CONTENT_SCORE":
+            "8",
+
+        "TREND_SCORE":
+            "7",
+
+        "RELEVANCE_DECISION":
+            "NO_TREND",
+
+        "RELEVANCE_REASON":
+            (
+                "Universal comedy metadata is being used because "
+                "AI metadata generation was unavailable."
+            ),
+
+        "TREND_ANGLE":
+            "No specific trend applied.",
+
+        "KEYWORDS":
+            (
+                "funny, comedy compilation, hilarious moments, "
+                "funny clips, entertainment"
+            ),
     },
 
     {
-        "TITLE_1": "Best Funny Moments in One Video 😂",
-        "TITLE_2": "These Comedy Moments Are Hilarious 😂",
-        "TITLE_3": "Warning: You Might Laugh Too Much 😂",
-        "RECOMMENDED_TITLE": "Warning: You Might Laugh Too Much 😂",
-        "DESCRIPTION": (
-            "Enjoy a quick dose of comedy with funny moments, "
-            "unexpected reactions and entertaining clips. "
-            "Sit back, watch and have a laugh!"
-        ),
-        "HASHTAGS": (
-            "#Comedy #FunnyVideos #Hilarious "
-            "#FunnyMoments #Laughing #Humor #ComedyClips"
-        ),
-        "CONTENT_SCORE": "8",
-        "TREND_SCORE": "6",
-        "RELEVANCE_DECISION": "NO_TREND",
-        "RELEVANCE_REASON": (
-            "Universal comedy metadata is being used because "
-            "AI metadata generation was unavailable."
-        ),
-        "TREND_ANGLE": (
-            "No specific trend applied."
-        ),
-        "KEYWORDS": (
-            "funny moments, comedy, hilarious videos, "
-            "laughing, comedy compilation"
-        ),
+        "TITLE_1":
+            "Best Funny Moments in One Video 😂",
+
+        "TITLE_2":
+            "These Comedy Moments Are Hilarious 😂",
+
+        "TITLE_3":
+            "Warning: You Might Laugh Too Much 😂",
+
+        "RECOMMENDED_TITLE":
+            "Warning: You Might Laugh Too Much 😂",
+
+        "DESCRIPTION":
+            (
+                "Enjoy a quick dose of comedy with funny moments, "
+                "unexpected reactions and entertaining clips. "
+                "Sit back, watch and have a laugh!"
+            ),
+
+        "HASHTAGS":
+            (
+                "#Comedy #FunnyVideos #Hilarious "
+                "#FunnyMoments #Laughing #Humor #ComedyClips"
+            ),
+
+        "CONTENT_SCORE":
+            "8",
+
+        "TREND_SCORE":
+            "6",
+
+        "RELEVANCE_DECISION":
+            "NO_TREND",
+
+        "RELEVANCE_REASON":
+            (
+                "Universal comedy metadata is being used because "
+                "AI metadata generation was unavailable."
+            ),
+
+        "TREND_ANGLE":
+            "No specific trend applied.",
+
+        "KEYWORDS":
+            (
+                "funny moments, comedy, hilarious videos, "
+                "laughing, comedy compilation"
+            ),
     },
 
     {
-        "TITLE_1": "Can't Watch This Without Laughing 😂",
-        "TITLE_2": "A Dose of Pure Comedy 😂",
-        "TITLE_3": "Funniest Clips That Made Us Laugh 😂",
-        "RECOMMENDED_TITLE": "Can't Watch This Without Laughing 😂",
-        "DESCRIPTION": (
-            "Here is a collection of entertaining comedy "
-            "moments for anyone who loves a good laugh. "
-            "Enjoy the funny clips and share the laughter!"
-        ),
-        "HASHTAGS": (
-            "#Comedy #Funny #Humor "
-            "#FunnyClips #ComedyCompilation #Laugh #Fun"
-        ),
-        "CONTENT_SCORE": "8",
-        "TREND_SCORE": "6",
-        "RELEVANCE_DECISION": "NO_TREND",
-        "RELEVANCE_REASON": (
-            "Universal comedy metadata is being used because "
-            "AI metadata generation was unavailable."
-        ),
-        "TREND_ANGLE": (
-            "No specific trend applied."
-        ),
-        "KEYWORDS": (
-            "comedy, funny clips, humor, funny compilation, "
-            "entertainment"
-        ),
+        "TITLE_1":
+            "Can't Watch This Without Laughing 😂",
+
+        "TITLE_2":
+            "A Dose of Pure Comedy 😂",
+
+        "TITLE_3":
+            "Funniest Clips That Made Us Laugh 😂",
+
+        "RECOMMENDED_TITLE":
+            "Can't Watch This Without Laughing 😂",
+
+        "DESCRIPTION":
+            (
+                "Here is a collection of entertaining comedy "
+                "moments for anyone who loves a good laugh. "
+                "Enjoy the funny clips and share the laughter!"
+            ),
+
+        "HASHTAGS":
+            (
+                "#Comedy #Funny #Humor "
+                "#FunnyClips #ComedyCompilation #Laugh #Fun"
+            ),
+
+        "CONTENT_SCORE":
+            "8",
+
+        "TREND_SCORE":
+            "6",
+
+        "RELEVANCE_DECISION":
+            "NO_TREND",
+
+        "RELEVANCE_REASON":
+            (
+                "Universal comedy metadata is being used because "
+                "AI metadata generation was unavailable."
+            ),
+
+        "TREND_ANGLE":
+            "No specific trend applied.",
+
+        "KEYWORDS":
+            (
+                "comedy, funny clips, humor, funny compilation, "
+                "entertainment"
+            ),
     },
 
     {
-        "TITLE_1": "The Comedy Compilation You Needed 😂",
-        "TITLE_2": "Pure Funny Moments From Start to Finish 😂",
-        "TITLE_3": "These Moments Are Seriously Funny 😂",
-        "RECOMMENDED_TITLE": "Pure Funny Moments From Start to Finish 😂",
-        "DESCRIPTION": (
-            "A fun compilation of comedy moments, funny "
-            "situations and entertaining clips. Perfect for "
-            "a quick laugh whenever you need one!"
-        ),
-        "HASHTAGS": (
-            "#Funny #Comedy #Entertainment "
-            "#FunnyVideos #ComedyClips #Humor #Laugh"
-        ),
-        "CONTENT_SCORE": "8",
-        "TREND_SCORE": "7",
-        "RELEVANCE_DECISION": "NO_TREND",
-        "RELEVANCE_REASON": (
-            "Universal comedy metadata is being used because "
-            "AI metadata generation was unavailable."
-        ),
-        "TREND_ANGLE": (
-            "No specific trend applied."
-        ),
-        "KEYWORDS": (
-            "comedy compilation, funny videos, "
-            "funny moments, comedy clips, humor"
-        ),
-    },
+        "TITLE_1":
+            "The Comedy Compilation You Needed 😂",
 
+        "TITLE_2":
+            "Pure Funny Moments From Start to Finish 😂",
+
+        "TITLE_3":
+            "These Moments Are Seriously Funny 😂",
+
+        "RECOMMENDED_TITLE":
+            "Pure Funny Moments From Start to Finish 😂",
+
+        "DESCRIPTION":
+            (
+                "A fun compilation of comedy moments, funny "
+                "situations and entertaining clips. Perfect for "
+                "a quick laugh whenever you need one!"
+            ),
+
+        "HASHTAGS":
+            (
+                "#Funny #Comedy #Entertainment "
+                "#FunnyVideos #ComedyClips #Humor #Laugh"
+            ),
+
+        "CONTENT_SCORE":
+            "8",
+
+        "TREND_SCORE":
+            "7",
+
+        "RELEVANCE_DECISION":
+            "NO_TREND",
+
+        "RELEVANCE_REASON":
+            (
+                "Universal comedy metadata is being used because "
+                "AI metadata generation was unavailable."
+            ),
+
+        "TREND_ANGLE":
+            "No specific trend applied.",
+
+        "KEYWORDS":
+            (
+                "comedy compilation, funny videos, "
+                "funny moments, comedy clips, humor"
+            ),
+    },
 ]
 
 
 def get_random_fallback_metadata():
     """
-    Randomly select one of the five universal comedy
-    metadata sets.
+    Randomly select one universal comedy metadata set.
     """
 
     selected = random.choice(
@@ -370,7 +479,7 @@ def get_random_fallback_metadata():
 
 def get_drive_service():
     """
-    Create an authenticated Google Drive client using
+    Create authenticated Google Drive client using
     the user's OAuth refresh token.
     """
 
@@ -395,54 +504,70 @@ def get_drive_service():
 
 def list_input_videos(drive_service):
     """
-    Find videos inside 01_INPUT.
+    Find ALL videos inside 01_INPUT.
+
+    Pagination is used so more than 100 videos
+    can also be processed.
     """
-
-    query = (
-        f"'{DRIVE_INPUT_FOLDER_ID}' in parents "
-        f"and trashed = false"
-    )
-
-    response = (
-        drive_service.files()
-        .list(
-            q=query,
-            pageSize=100,
-            orderBy="createdTime",
-            fields=(
-                "files("
-                "id,"
-                "name,"
-                "mimeType,"
-                "size,"
-                "createdTime,"
-                "modifiedTime"
-                ")"
-            ),
-        )
-        .execute()
-    )
-
-    files = response.get(
-        "files",
-        []
-    )
 
     videos = []
 
-    for file in files:
+    page_token = None
 
-        name = file.get(
-            "name",
-            ""
+    while True:
+
+        query = (
+            f"'{DRIVE_INPUT_FOLDER_ID}' in parents "
+            f"and trashed = false"
         )
 
-        suffix = Path(
-            name
-        ).suffix.lower()
+        response = (
+            drive_service.files()
+            .list(
+                q=query,
+                pageSize=100,
+                pageToken=page_token,
+                orderBy="createdTime",
+                fields=(
+                    "nextPageToken,"
+                    "files("
+                    "id,"
+                    "name,"
+                    "mimeType,"
+                    "size,"
+                    "createdTime,"
+                    "modifiedTime"
+                    ")"
+                ),
+            )
+            .execute()
+        )
 
-        if suffix in VIDEO_EXTENSIONS:
-            videos.append(file)
+        files = response.get(
+            "files",
+            []
+        )
+
+        for file in files:
+
+            name = file.get(
+                "name",
+                ""
+            )
+
+            suffix = Path(
+                name
+            ).suffix.lower()
+
+            if suffix in VIDEO_EXTENSIONS:
+                videos.append(file)
+
+        page_token = response.get(
+            "nextPageToken"
+        )
+
+        if not page_token:
+            break
 
     return videos
 
@@ -452,7 +577,15 @@ def metadata_exists(
     video_name,
 ):
     """
-    Check whether a matching TXT file already exists.
+    Check whether matching TXT metadata already exists.
+
+    Example:
+
+    Video:
+        Funny Video.mp4
+
+    Metadata:
+        Funny Video.txt
     """
 
     metadata_name = (
@@ -503,7 +636,7 @@ def download_drive_file(
     destination,
 ):
     """
-    Download a Drive file to the GitHub runner.
+    Download a Drive video to the GitHub runner.
     """
 
     request = (
@@ -548,7 +681,7 @@ def upload_text_file(
     folder_id,
 ):
     """
-    Upload a TXT file to Drive.
+    Upload a TXT file to Google Drive.
     """
 
     metadata = {
@@ -623,7 +756,7 @@ def move_file_to_failed(
     file_id,
 ):
     """
-    Move a failed video from 01_INPUT to 04_FAILED.
+    Move failed video from 01_INPUT to 04_FAILED.
     """
 
     (
@@ -654,7 +787,8 @@ def upload_video_to_gemini(
     video_path,
 ):
     """
-    Upload the video to Gemini Files API.
+    Upload video to Gemini Files API
+    and wait until it becomes ACTIVE.
     """
 
     logger.info(
@@ -712,6 +846,88 @@ def upload_video_to_gemini(
 
 
 # ============================================================
+# FIELD EXTRACTION
+# ============================================================
+
+def extract_field(
+    text,
+    field_name,
+):
+    """
+    Extract a labeled field from Gemini output.
+    """
+
+    if not text:
+        return ""
+
+    marker = (
+        field_name
+        + ":"
+    )
+
+    start = text.find(
+        marker
+    )
+
+    if start == -1:
+        return ""
+
+    start += len(
+        marker
+    )
+
+    remaining = text[start:]
+
+    lines = remaining.splitlines()
+
+    values = []
+
+    for line in lines:
+
+        stripped = line.strip()
+
+        if not stripped:
+
+            if values:
+                break
+
+            continue
+
+        # Stop when another uppercase field begins.
+        if (
+            ":" in stripped
+            and stripped
+            .split(
+                ":",
+                1
+            )[0]
+            .strip()
+            .replace(
+                "_",
+                ""
+            )
+            .isalnum()
+            and stripped
+            .split(
+                ":",
+                1
+            )[0]
+            .isupper()
+        ):
+
+            break
+
+        values.append(
+            stripped
+        )
+
+    return (
+        "\n".join(values)
+        .strip()
+    )
+
+
+# ============================================================
 # VIDEO ANALYSIS
 # ============================================================
 
@@ -720,10 +936,7 @@ def analyze_video(
     uploaded_file,
 ):
     """
-    Understand the Short.
-
-    Gemini is asked to identify what is actually in
-    the video.
+    Understand the complete Short.
     """
 
     prompt = """
@@ -743,8 +956,8 @@ Identify:
 8. Likely audience.
 9. Important keywords.
 10. Whether the content is factual, entertainment,
-    educational, news/current affairs, commentary,
-    reaction, sports, technology, comedy, lifestyle, etc.
+educational, news/current affairs, commentary,
+reaction, sports, technology, comedy, lifestyle, etc.
 
 Do not invent facts.
 
@@ -877,14 +1090,17 @@ def youtube_search(query):
                     "title",
                     ""
                 ),
+
                 "description": snippet.get(
                     "description",
                     ""
                 )[:500],
+
                 "published_at": snippet.get(
                     "publishedAt",
                     ""
                 ),
+
                 "channel": snippet.get(
                     "channelTitle",
                     ""
@@ -899,7 +1115,7 @@ def collect_youtube_research(
     analysis_text,
 ):
     """
-    Use topic/keywords from video analysis
+    Use topic and keywords from video analysis
     to collect recent YouTube signals.
     """
 
@@ -916,6 +1132,7 @@ def collect_youtube_research(
     searches = []
 
     if topic:
+
         searches.append(
             topic
         )
@@ -993,6 +1210,7 @@ A trend is useful only if it is genuinely connected
 to the Short's subject.
 
 VIDEO ANALYSIS:
+
 {analysis_text}
 
 Research:
@@ -1096,10 +1314,10 @@ def generate_metadata(
     web_research,
 ):
     """
-    Generate the final Shorts metadata with Gemini.
+    Generate final Shorts metadata.
 
-    If ALL Gemini attempts fail, this function automatically
-    selects one of the five universal comedy metadata sets.
+    If ALL Gemini metadata-generation attempts fail,
+    use one of the five universal fallback sets.
     """
 
     youtube_context = "\n".join(
@@ -1148,12 +1366,15 @@ IMPORTANT RULES:
   by the video.
 
 VIDEO ANALYSIS:
+
 {analysis_text}
 
 RECENT YOUTUBE RESULTS:
+
 {youtube_context}
 
 CURRENT WEB RESEARCH:
+
 {web_research}
 
 Return EXACTLY this format:
@@ -1241,10 +1462,6 @@ keyword1, keyword2, keyword3, keyword4, keyword5
                 exc,
             )
 
-    # ========================================================
-    # IMPORTANT FALLBACK
-    # ========================================================
-
     logger.error(
         "ALL GEMINI METADATA GENERATION ATTEMPTS FAILED."
     )
@@ -1262,86 +1479,6 @@ keyword1, keyword2, keyword3, keyword4, keyword5
     )
 
     return get_random_fallback_metadata()
-
-
-# ============================================================
-# FIELD EXTRACTION
-# ============================================================
-
-def extract_field(
-    text,
-    field_name,
-):
-    """
-    Extract a labeled field from Gemini output.
-    """
-
-    marker = (
-        field_name
-        + ":"
-    )
-
-    start = text.find(
-        marker
-    )
-
-    if start == -1:
-
-        return ""
-
-    start += len(
-        marker
-    )
-
-    remaining = text[start:]
-
-    lines = remaining.splitlines()
-
-    values = []
-
-    for line in lines:
-
-        stripped = line.strip()
-
-        if not stripped:
-
-            if values:
-                break
-
-            continue
-
-        # Stop when another uppercase field begins.
-        if (
-            ":" in stripped
-            and stripped
-            .split(
-                ":",
-                1
-            )[0]
-            .strip()
-            .replace(
-                "_",
-                ""
-            )
-            .isalnum()
-            and stripped
-            .split(
-                ":",
-                1
-            )[0]
-            .isupper()
-        ):
-
-            break
-
-        values.append(
-            stripped
-        )
-
-    return (
-        "\n".join(values)
-        .strip()
-    )
 
 
 # ============================================================
@@ -1437,7 +1574,7 @@ def build_metadata_file(
     metadata,
 ):
     """
-    Build the human-readable TXT that Code 2
+    Build human-readable TXT that Code 2
     will later use.
     """
 
@@ -1619,7 +1756,17 @@ def process_video(
     )
 
     # --------------------------------------------------------
-    # Duplicate protection
+    # DUPLICATE PROTECTION
+    # --------------------------------------------------------
+    #
+    # If metadata already exists:
+    #
+    # 1. Do NOT process the video.
+    # 2. Do NOT move the video.
+    # 3. Return SKIPPED.
+    #
+    # The main loop will then automatically continue
+    # with the next video.
     # --------------------------------------------------------
 
     if metadata_exists(
@@ -1636,7 +1783,7 @@ def process_video(
         return "SKIPPED"
 
     # --------------------------------------------------------
-    # Size check
+    # SIZE CHECK
     # --------------------------------------------------------
 
     size_bytes = int(
@@ -1666,7 +1813,7 @@ def process_video(
         )
 
     # --------------------------------------------------------
-    # Local filename
+    # LOCAL FILENAME
     # --------------------------------------------------------
 
     safe_name = (
@@ -1692,7 +1839,7 @@ def process_video(
     )
 
     # --------------------------------------------------------
-    # Download
+    # DOWNLOAD
     # --------------------------------------------------------
 
     download_drive_file(
@@ -1702,7 +1849,7 @@ def process_video(
     )
 
     # --------------------------------------------------------
-    # Gemini video upload
+    # GEMINI VIDEO UPLOAD
     # --------------------------------------------------------
 
     uploaded_file = (
@@ -1715,7 +1862,7 @@ def process_video(
     try:
 
         # ----------------------------------------------------
-        # Understand video
+        # UNDERSTAND VIDEO
         # ----------------------------------------------------
 
         analysis = analyze_video(
@@ -1728,7 +1875,7 @@ def process_video(
         )
 
         # ----------------------------------------------------
-        # YouTube research
+        # YOUTUBE RESEARCH
         # ----------------------------------------------------
 
         youtube_results = (
@@ -1738,7 +1885,7 @@ def process_video(
         )
 
         # ----------------------------------------------------
-        # Current web research
+        # CURRENT WEB RESEARCH
         # ----------------------------------------------------
 
         web_research = (
@@ -1749,13 +1896,7 @@ def process_video(
         )
 
         # ----------------------------------------------------
-        # Final metadata
-        #
-        # IMPORTANT:
-        #
-        # generate_metadata() automatically switches to
-        # one of the five universal comedy metadata sets
-        # if Gemini metadata generation fails.
+        # FINAL METADATA
         # ----------------------------------------------------
 
         metadata = generate_metadata(
@@ -1766,7 +1907,7 @@ def process_video(
         )
 
         # ----------------------------------------------------
-        # Quality gate
+        # QUALITY GATE
         # ----------------------------------------------------
 
         validate_metadata(
@@ -1774,7 +1915,7 @@ def process_video(
         )
 
         # ----------------------------------------------------
-        # Build TXT
+        # BUILD TXT
         # ----------------------------------------------------
 
         final_text = (
@@ -1792,7 +1933,7 @@ def process_video(
         )
 
         # ----------------------------------------------------
-        # Upload TXT to Drive
+        # UPLOAD TXT TO DRIVE
         # ----------------------------------------------------
 
         upload_text_file(
@@ -1811,13 +1952,12 @@ def process_video(
     finally:
 
         # ----------------------------------------------------
-        # Remove local temporary video.
+        # REMOVE LOCAL VIDEO
         # ----------------------------------------------------
 
         try:
 
             if video_path.exists():
-
                 video_path.unlink()
 
         except Exception:
@@ -1825,13 +1965,12 @@ def process_video(
             pass
 
         # ----------------------------------------------------
-        # Remove local metadata file.
+        # REMOVE LOCAL METADATA
         # ----------------------------------------------------
 
         try:
 
             if metadata_path.exists():
-
                 metadata_path.unlink()
 
         except Exception:
@@ -1850,7 +1989,7 @@ def main():
     )
 
     # --------------------------------------------------------
-    # Connect to Drive
+    # CONNECT TO DRIVE
     # --------------------------------------------------------
 
     drive_service = (
@@ -1858,7 +1997,7 @@ def main():
     )
 
     # --------------------------------------------------------
-    # Connect to Gemini
+    # CONNECT TO GEMINI
     # --------------------------------------------------------
 
     gemini_client = (
@@ -1866,7 +2005,7 @@ def main():
     )
 
     # --------------------------------------------------------
-    # Find videos
+    # FIND ALL VIDEOS
     # --------------------------------------------------------
 
     videos = (
@@ -1884,15 +2023,40 @@ def main():
         return
 
     logger.info(
-        "Found %d video(s). "
-        "Maximum this run: %d",
+        "Found %d video(s) in 01_INPUT.",
         len(videos),
-        MAX_VIDEOS_PER_RUN,
     )
 
-    videos = videos[
-        :MAX_VIDEOS_PER_RUN
-    ]
+    # --------------------------------------------------------
+    # OPTIONAL PER-RUN LIMIT
+    # --------------------------------------------------------
+    #
+    # 0 = ALL VIDEOS
+    #
+    # Positive number = only that many videos.
+    # --------------------------------------------------------
+
+    if MAX_VIDEOS_PER_RUN > 0:
+
+        videos = videos[
+            :MAX_VIDEOS_PER_RUN
+        ]
+
+        logger.info(
+            "This run is limited to %d video(s).",
+            len(videos),
+        )
+
+    else:
+
+        logger.info(
+            "No per-run limit. "
+            "Processing all videos."
+        )
+
+    # --------------------------------------------------------
+    # COUNTERS
+    # --------------------------------------------------------
 
     success_count = 0
 
@@ -1903,7 +2067,7 @@ def main():
     log_lines = []
 
     # --------------------------------------------------------
-    # Process videos
+    # PROCESS VIDEOS ONE BY ONE
     # --------------------------------------------------------
 
     for video in videos:
@@ -1954,15 +2118,7 @@ def main():
             )
 
             # ------------------------------------------------
-            # Move failed video to 04_FAILED.
-            #
-            # This happens only if the COMPLETE processing
-            # fails, such as video upload/analysis/Drive
-            # failure.
-            #
-            # A Gemini metadata-generation failure alone
-            # should NOT reach here because the universal
-            # fallback metadata handles it.
+            # MOVE FAILED VIDEO TO 04_FAILED
             # ------------------------------------------------
 
             try:
@@ -1989,7 +2145,7 @@ def main():
                 )
 
     # --------------------------------------------------------
-    # Upload log
+    # RUN SUMMARY
     # --------------------------------------------------------
 
     summary = "\n".join(
@@ -2003,6 +2159,10 @@ def main():
             *log_lines,
         ]
     )
+
+    # --------------------------------------------------------
+    # UPLOAD LOG
+    # --------------------------------------------------------
 
     upload_log(
         drive_service,
@@ -2023,5 +2183,4 @@ def main():
 # ============================================================
 
 if __name__ == "__main__":
-
     main()
